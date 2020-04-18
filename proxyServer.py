@@ -10,24 +10,6 @@ import logging
 #logging.basicConfig(level=logging.DEBUG)
 
 class HttpRequestInfo(object):
-    """
-    Represents a HTTP request information
-    Since you'll need to standardize all requests you get
-    as specified by the document, after you parse the
-    request from the TCP packet put the information you
-    get in this object.
-    To send the request to the remote server, call to_http_string
-    on this object, convert that string to bytes then send it in
-    the socket.
-    client_address_info: address of the client;
-    the client of the proxy, which sent the HTTP request.
-    requested_host: the requested website, the remote website
-    we want to visit.
-    requested_port: port of the webserver we want to visit.
-    requested_path: path of the requested resource, without
-    including the website name.
-    NOTE: you need to implement to_http_string() for this class.
-    """
 
     def __init__(self, client_info, method: str, requested_host: str,
                  requested_port: int,
@@ -47,19 +29,7 @@ class HttpRequestInfo(object):
         self.headers = headers
 
     def to_http_string(self):
-        """
-        Convert the HTTP request/response
-        to a valid HTTP string.
-        As the protocol specifies:
-        [request_line]\r\n
-        [header]\r\n
-        [headers..]\r\n
-        \r\n
-        You still need to convert this string
-        to byte array before sending it to the socket,
-        keeping it as a string in this stage is to ease
-        debugging and testing.
-        """
+
 
 
         request = self.method + " " + self.requested_path + " " + "HTTP/1.0\r\n"
@@ -74,9 +44,7 @@ class HttpRequestInfo(object):
         return request
 
     def to_byte_array(self, http_string):
-        """
-        Converts an HTTP string to a byte array.
-        """
+
         return bytes(http_string, "UTF-8")
 
     def display(self):
@@ -90,9 +58,7 @@ class HttpRequestInfo(object):
 
 
 class HttpErrorResponse(object):
-    """
-    Represents a proxy-error-response.
-    """
+
 
     def __init__(self, code, message):
         self.code = code
@@ -107,9 +73,7 @@ class HttpErrorResponse(object):
         pass
 
     def to_byte_array(self, http_string):
-        """
-        Converts an HTTP string to a byte array.
-        """
+
         return bytes(http_string, "UTF-8")
 
     def display(self):
@@ -159,11 +123,7 @@ class HttpCache():
 
 
 class HttpRequestState(enum.Enum):
-    """
-    The values here have nothing to do with
-    response values i.e. 400, 502, ..etc.
-    Leave this as is, feel free to add yours.
-    """
+
     INVALID_INPUT = 0
     NOT_SUPPORTED = 1
     GOOD = 2
@@ -171,12 +131,7 @@ class HttpRequestState(enum.Enum):
 
 
 def entry_point(proxy_port_number):
-    """
-    Entry point, start your code here.
-    Please don't delete this function,
-    but feel free to modify the code
-    inside it.
-    """
+
     if len(sys.argv) > 2:
         ip_adress = sys.argv[2]
     else:
@@ -278,18 +233,7 @@ async def handleServerCom(goodHttpRequest: HttpRequestInfo):
 
 
 def http_request_pipeline(source_addr, http_raw_data):
-    """
-    HTTP request processing pipeline.
-    - Parses the given HTTP request
-    - Validates it
-    - Returns a sanitized HttpRequestInfo or HttpErrorResponse
-        based on request validity.
-    returns:
-     HttpRequestInfo if the request was parsed correctly.
-     HttpErrorResponse if the request was invalid.
-    Please don't remove this function, but feel
-    free to change its content
-    """
+
     # Parse HTTP request
     requestState = check_http_request_validity(http_raw_data)
     if requestState.name == "GOOD":
@@ -306,11 +250,7 @@ def http_request_pipeline(source_addr, http_raw_data):
 
 
 def parse_http_request(source_addr, http_raw_data) -> HttpRequestInfo:
-    """
-    This function parses an HTTP request into an HttpRequestInfo
-    object.
-    it does NOT validate the HTTP request.
-    """
+
     exCounter = 0
     headers = []
     hostIndex = -1
@@ -407,11 +347,7 @@ def getMethod(rawData, counter):
 
 
 def check_http_request_validity(http_raw_data) -> HttpRequestState:
-    """
-    Checks if an HTTP response is valid
-    returns:
-    One of values in HttpRequestState
-    """
+
     try:
         exCounter = 0
         headers = []
@@ -535,12 +471,7 @@ def getStringLenght(rawHttp, start, delim = 32):
 
 
 def get_arg(param_index, default=None):
-    """
-        Gets a command line argument by index (note: index starts from 1)
-        If the argument is not supplies, it tries to use a default value.
-        If a default value isn't supplied, an error message is printed
-        and terminates the program.
-    """
+
     try:
         return sys.argv[param_index]
     except IndexError as e:
@@ -553,30 +484,13 @@ def get_arg(param_index, default=None):
             exit(-1)    # Program execution failed.
 
 
-def check_file_name():
-    """
-    Checks if this file has a valid name for *submission*
-    leave this function and as and don't use it. it's just
-    to notify you if you're submitting a file with a correct
-    name.
-    """
-    script_name = os.path.basename(__file__)
-    import re
-    matches = re.findall(r"(\d{4}_)lab2\.py", script_name)
-    if not matches:
-        print(f"[WARN] File name is invalid [{script_name}]")
 
 
 def main():
-    """
-    Please leave the code in this function as is.
-    To add code that uses sockets, feel free to add functions
-    above main and outside the classes.
-    """
+
     print("\n\n")
     print("*" * 50)
     print(f"[LOG] Printing command line arguments [{', '.join(sys.argv)}]")
-    check_file_name()
     print("*" * 50)
 
     # This argument is optional, defaults to 18888
